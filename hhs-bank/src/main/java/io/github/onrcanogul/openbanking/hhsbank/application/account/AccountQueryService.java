@@ -1,5 +1,6 @@
 package io.github.onrcanogul.openbanking.hhsbank.application.account;
 
+import io.github.onrcanogul.openbanking.hhsbank.application.audit.DataAccessAuditor;
 import io.github.onrcanogul.openbanking.hhsbank.application.consent.ConsentContext;
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.AccountNotFoundException;
 import io.github.onrcanogul.openbanking.hhsbank.common.pagination.PageQuery;
@@ -11,14 +12,18 @@ import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.ConsentPerm
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 public class AccountQueryService {
 
     private final AccountRepository accountRepository;
+    private final DataAccessAuditor auditorService;
 
-    public AccountQueryService(AccountRepository accountRepository) {
+    public AccountQueryService(AccountRepository accountRepository, DataAccessAuditor auditorService) {
         this.accountRepository = accountRepository;
+        this.auditorService = auditorService;
     }
 
     public PageResult<Account> listAccounts(ConsentContext ctx, PageQuery page) {
@@ -26,7 +31,7 @@ public class AccountQueryService {
 
         PageResult<Account> result = accountRepository.findByRefs(ctx.accountRefs(), ctx.customerId(), page);
 
-        //TODO: Add auditor.
+        auditorService.record(ctx, "ACCOUNT_LIST", result.content().stream().map(Account::accountRef).toList());
         return result;
     }
 
@@ -41,7 +46,7 @@ public class AccountQueryService {
         Balance balance = accountRepository.findBalance(account.accountRef())
                 .orElseThrow(() -> new AccountNotFoundException(accountRef));
 
-        //TODO: Add auditor.
+        auditorService.record(ctx, "BALANCE", List.of(accountRef));
         return balance;
     }
 }
