@@ -1,6 +1,27 @@
 spring:
   application:
     name: hhs-bank
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1521/FREEPDB1
+    username: ${BANK_DB_USER:bank_app}
+    password: ${BANK_DB_PASSWORD:bank_app_pw}
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    locations: classpath:db/migration,classpath:db/dev-data
 
 server:
   port: 8081
