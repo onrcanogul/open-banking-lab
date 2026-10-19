@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: hhs-bank
+
+server:
+  port: 8081
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health, info"
