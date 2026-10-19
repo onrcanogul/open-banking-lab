@@ -1,4 +1,4 @@
-package io.github.onrcanogul.openbanking.hhs_bank.security.config;
+package io.github.onrcanogul.openbanking.hhsbank.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

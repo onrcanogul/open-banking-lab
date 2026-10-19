@@ -1,4 +1,4 @@
-package io.github.onrcanogul.openbanking.hhs_bank;
+package io.github.onrcanogul.openbanking.hhsbank;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

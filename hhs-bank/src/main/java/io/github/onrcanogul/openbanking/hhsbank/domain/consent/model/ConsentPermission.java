@@ -1,4 +1,4 @@
-﻿package io.github.onrcanogul.openbanking.hhs_bank.domain.consent.model;
+﻿package io.github.onrcanogul.openbanking.hhsbank.domain.consent.model;
 
 public enum ConsentPermission {
     ACCOUNT_BASIC,

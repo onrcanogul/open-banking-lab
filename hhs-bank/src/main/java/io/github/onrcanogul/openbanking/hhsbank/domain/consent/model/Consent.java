@@ -1,4 +1,4 @@
-﻿package io.github.onrcanogul.openbanking.hhs_bank.domain.consent.model;
+﻿package io.github.onrcanogul.openbanking.hhsbank.domain.consent.model;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
@@ -14,7 +14,6 @@ public record Consent (
         OffsetDateTime expiresAt
 ) {
     public boolean isActive(Clock clock) {
-        return status == ConsentStatus.AUTHORIZED
-                && OffsetDateTime.now(clock).isBefore(expiresAt);
+        return status == ConsentStatus.AUTHORIZED && OffsetDateTime.now(clock).isBefore(expiresAt);
     }
 }
