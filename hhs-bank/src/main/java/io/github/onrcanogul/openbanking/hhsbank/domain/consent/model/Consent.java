@@ -4,6 +4,7 @@ import io.github.onrcanogul.openbanking.hhsbank.common.exception.ConsentRevokedE
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.InvalidConsentTransitionException;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Set;
 
@@ -15,14 +16,33 @@ public record Consent (
         String consentId, String customerId, String tppCode,
         ConsentStatus status, CancellationReason cancellationReason,
         Set<ConsentPermission> permissions, Set<String> accountRefs,
-        OffsetDateTime expiresAt, OffsetDateTime createdAt, OffsetDateTime updatedAt
+        OffsetDateTime expiresAt, OffsetDateTime createdAt, OffsetDateTime updatedAt,
+        CustomerIdentity identity, TransactionWindow transactionWindow, GkdAuthorization gkd
 ) {
+    private static final Duration AUTHORIZATION_TIMEOUT = Duration.ofMinutes(5);
+
     public Consent authorize(Set<String> selectedAccountRefs, Clock clock) {
         requireStatus(ConsentStatus.AWAITING_AUTHORIZATION);
         if (selectedAccountRefs == null || selectedAccountRefs.isEmpty()) {
             throw new IllegalArgumentException("At least one account must be selected");
         }
         return with(ConsentStatus.AUTHORIZED, null, Set.copyOf(selectedAccountRefs), clock);
+    }
+
+    public static Consent requestNew(String consentId, String customerId, String tppCode,
+                                     CustomerIdentity identity, Set<ConsentPermission> permissions,
+                                     OffsetDateTime expiresAt, TransactionWindow window,
+                                     String gkdMethod, String redirectUrl, Clock clock) {
+        OffsetDateTime now = OffsetDateTime.now(clock);
+        return new Consent(consentId, customerId, tppCode,
+                ConsentStatus.AWAITING_AUTHORIZATION, null,
+                Set.copyOf(permissions), Set.of(), expiresAt,now, now,
+                identity, window, new GkdAuthorization(gkdMethod, redirectUrl, now.plus(AUTHORIZATION_TIMEOUT)));
+    }
+
+    public Consent cancelForNewRequest(Clock clock) {
+        requireStatus(ConsentStatus.AWAITING_AUTHORIZATION);
+        return with(ConsentStatus.REVOKED, CancellationReason.NEW_CONSENT_REQUEST, accountRefs, clock);
     }
 
     public Consent markUsed(Clock clock) {
@@ -74,6 +94,6 @@ public record Consent (
     private Consent with(ConsentStatus newStatus, CancellationReason reason,
                          Set<String> refs, Clock clock) {
         return new Consent(consentId, customerId, tppCode, newStatus, reason,
-                permissions, refs, expiresAt, createdAt, OffsetDateTime.now(clock));
+                permissions, refs, expiresAt, createdAt, OffsetDateTime.now(clock), identity, transactionWindow, gkd);
     }
 }

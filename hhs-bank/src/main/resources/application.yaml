@@ -37,3 +37,5 @@ ohvps:
     jwk-set-uri: http://localhost:8080/realms/ohvps-bank/protocol/openid-connect/certs
     audience: ohvps-hbh
     clock-skew: 30s
+
+  bank:

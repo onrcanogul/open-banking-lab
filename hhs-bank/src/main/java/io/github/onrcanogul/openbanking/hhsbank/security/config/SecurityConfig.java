@@ -2,8 +2,10 @@ package io.github.onrcanogul.openbanking.hhsbank.security.config;
 
 import io.github.onrcanogul.openbanking.hhsbank.security.ConsentAuthenticationConverter;
 import io.github.onrcanogul.openbanking.hhsbank.security.OhvpsSecurityErrorHandler;
+import io.github.onrcanogul.openbanking.hhsbank.security.TppAuthenticationConverter;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,6 +33,25 @@ class SecurityConfig {
 
     @Bean
     @Order(2)
+    SecurityFilterChain consentChain(HttpSecurity http,
+                                     @Qualifier("tppTokenDecoder") JwtDecoder decoder,
+                                     TppAuthenticationConverter tppConverter) throws Exception {
+        return http
+                .securityMatcher("/ohvps/hbh/s2.0/hesap-bilgisi-rizasi/**")
+                .authorizeHttpRequests(a -> a.anyRequest().hasAuthority("SCOPE_hesap_bilgisi"))
+                .oauth2ResourceServer(rs -> rs
+                        .jwt(j -> j
+                                .decoder(decoder)
+                                .jwtAuthenticationConverter(tppConverter))
+                        .authenticationEntryPoint(errorHandler))
+                .exceptionHandling(e -> e.accessDeniedHandler(errorHandler))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                .build();
+    }
+
+    @Bean
+    @Order(3)
     SecurityFilterChain ohvpsChain(HttpSecurity http, JwtDecoder decoder) throws Exception {
         return http
                 .securityMatcher("/ohvps/**")
@@ -50,7 +71,7 @@ class SecurityConfig {
     }
 
     @Bean
-    @Order(3)
+    @Order(4)
     SecurityFilterChain denyEverythingElse(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(a -> a

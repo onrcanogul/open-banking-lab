@@ -62,7 +62,8 @@ public class ConsentEntity {
 
     public Consent toDomain() {
         return new Consent(consentId, customerId, tppCode, status, cancellationReason,
-                Set.copyOf(permissions), Set.copyOf(accountRefs), expiresAt, createdAt, updatedAt);
+                Set.copyOf(permissions), Set.copyOf(accountRefs), expiresAt, createdAt, updatedAt, null, null, null);
+        //TODO
     }
 
     public static ConsentEntity fromDomain(Consent c) {
