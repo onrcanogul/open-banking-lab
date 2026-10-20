@@ -2,10 +2,8 @@ package io.github.onrcanogul.openbanking.hhsbank.common.exception;
 
 import org.springframework.http.HttpStatus;
 
-// common/error/OhvpsErrorCode.java
 public enum OhvpsErrorCode {
 
-    // ── Resource: isteğin şekli veya hedef kaynakla ilgili ──
     INVALID_FORMAT("TR.OHVPS.Resource.InvalidFormat", HttpStatus.BAD_REQUEST,
             "Validation error", "Şema kontrolleri başarısız"),
     NOT_FOUND("TR.OHVPS.Resource.NotFound", HttpStatus.NOT_FOUND,
@@ -23,7 +21,6 @@ public enum OhvpsErrorCode {
     CONSENT_MISMATCH("TR.OHVPS.Resource.ConsentMismatch", HttpStatus.FORBIDDEN,         // Bkz. not
             "Consent status not suitable", "Rıza durumu işleme uygun değil"),
 
-    // ── Business: iş kuralı ihlalleri ──
     INCORRECT_PERMISSION_TYPE("TR.OHVPS.Business.IncorrectPermissionType", HttpStatus.BAD_REQUEST,
             "Incorrect permission type combination", "Hatalı izin türü kombinasyonu"),
     PERMISSION_TYPE_NOT_SUPPORTED("TR.OHVPS.Business.PermissionTypeNotSupported", HttpStatus.FORBIDDEN,   // Bkz. not
@@ -39,7 +36,6 @@ public enum OhvpsErrorCode {
     INVALID_ACCOUNT("TR.OHVPS.Business.InvalidAccount", HttpStatus.BAD_REQUEST,
             "Account is disabled or not found", "Hesap aktif değil veya bulunamadı"),
 
-    // ── Connection: kimlik, token ve erişim ──
     INVALID_TOKEN("TR.OHVPS.Connection.InvalidToken", HttpStatus.UNAUTHORIZED,
             "Invalid or expired token", "Geçersiz veya süresi dolmuş belirteç"),
     INVALID_ASPSP("TR.OHVPS.Connection.InvalidASPSP", HttpStatus.BAD_REQUEST,
@@ -51,7 +47,6 @@ public enum OhvpsErrorCode {
     EXCEEDED_RATE("TR.OHVPS.Connection.ExceededRate", HttpStatus.TOO_MANY_REQUESTS,
             "Exceeded rate", "Erişim sıklığı limiti aşımı"),
 
-    // ── Server ──
     INTERNAL_ERROR("TR.OHVPS.Server.InternalError", HttpStatus.INTERNAL_SERVER_ERROR,
             "Unexpected condition was encountered", "Beklenmeyen bir durumla karşılaşıldı"),
     SERVICE_UNAVAILABLE("TR.OHVPS.Server.ServiceUnavailable", HttpStatus.SERVICE_UNAVAILABLE,

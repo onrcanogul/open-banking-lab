@@ -24,14 +24,14 @@ public class OhvpsSecurityErrorHandler implements AuthenticationEntryPoint, Acce
     private final ObjectMapper mapper;
     private final Clock clock;
 
-    @Override    // Kimlik doğrulanamadı: token yok, geçersiz, süresi dolmuş, rıza aktif değil
+    @Override
     public void commence(HttpServletRequest req, HttpServletResponse res,
                          AuthenticationException ex) throws IOException {
         res.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");       // RFC 6750: 401 yanıtında bulunmalı
         write(req, res, HttpStatus.UNAUTHORIZED, "TR.OHVPS.Connection.InvalidToken");
     }
 
-    @Override    // Kimlik doğru ama yetki yok: scope eksik
+    @Override
     public void handle(HttpServletRequest req, HttpServletResponse res,
                        AccessDeniedException ex) throws IOException {
         write(req, res, HttpStatus.FORBIDDEN, "TR.OHVPS.Resource.Forbidden");

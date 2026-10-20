@@ -58,22 +58,21 @@ public class ConsentRequestRules {
         boolean accountBasic = p.contains(ACCOUNT_BASIC);
         boolean cardBasic = p.contains(CARD_BASIC);
 
-        if (!accountBasic && !cardBasic) {                                                      // 01 ya da 07 zorunlu
+        if (!accountBasic && !cardBasic) {
             throw incorrectPermission("01 or 07 required");
         }
         if (!accountBasic && containsAny(p, ACCOUNT_DETAIL, BALANCE, TRANSACTION_BASIC,
-                TRANSACTION_DETAIL, INSTANT_BALANCE)) {           // 01 yoksa 02–06 olamaz
+                TRANSACTION_DETAIL, INSTANT_BALANCE)) {
             throw incorrectPermission("02-06 require 01");
         }
-        if (!cardBasic && containsAny(p, CARD_DETAIL, CARD_TRANSACTION_DETAIL)) {              // 07 yoksa 08–09 olamaz
+        if (!cardBasic && containsAny(p, CARD_DETAIL, CARD_TRANSACTION_DETAIL)) {
             throw incorrectPermission("08-09 require 07");
         }
-        if (p.contains(INSTANT_BALANCE) && !p.contains(BALANCE)) {                             // 06, 03 olmadan olamaz
+        if (p.contains(INSTANT_BALANCE) && !p.contains(BALANCE)) {
             throw incorrectPermission("06 requires 03");
         }
     }
 
-    // En az: rıza tarihi + 1 gün (ertesi günün bitişi). En fazla: bireysel 6 ay, kurumsal 12 ay
     private void validateAccessExpiry(OffsetDateTime expiresAt, CustomerIdentity identity) {
         LocalDate today = LocalDate.now(clock);
         ZoneOffset offset = OffsetDateTime.now(clock).getOffset();
