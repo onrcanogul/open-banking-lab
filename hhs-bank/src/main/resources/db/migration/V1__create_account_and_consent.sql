@@ -23,13 +23,20 @@ CREATE TABLE consent (
                          customer_id  VARCHAR2(40)  NOT NULL,
                          tpp_code     VARCHAR2(10)  NOT NULL,
                          status       VARCHAR2(30)  NOT NULL,
+                         cancellation_status VARCHAR2(30),
                          expires_at   TIMESTAMP WITH TIME ZONE NOT NULL,
                          created_at   TIMESTAMP WITH TIME ZONE DEFAULT SYSTIMESTAMP NOT NULL,
                          updated_at   TIMESTAMP WITH TIME ZONE DEFAULT SYSTIMESTAMP NOT NULL,
                          version      NUMBER(19)    DEFAULT 0 NOT NULL,
                          CONSTRAINT pk_consent PRIMARY KEY (consent_id),
                          CONSTRAINT ck_consent_status CHECK (status IN
-                                                             ('AWAITING_AUTHORIZATION', 'AUTHORIZED', 'AUTHORIZATION_USED', 'REVOKED', 'EXPIRED'))
+                                                             ('AWAITING_AUTHORIZATION', 'AUTHORIZED', 'AUTHORIZATION_USED', 'TERMINATED', 'REVOKED')),
+                         CONSTRAINT ck_consent_cancellation CHECK (cancellation_status IN
+                                                             ('NEW_CONSENT_REQUEST', 'CUSTOMER_VIA_HHS', 'CUSTOMER_VIA_TPP',
+                                                              'TIMEOUT_AWAITING_AUTHORIZATION', 'TIMEOUT_AUTHORIZED',
+                                                              'GKD_DUPLICATE_CALL', 'GKD_IDENTITY_MISMATCH', 'GKD_NO_ELIGIBLE_PRODUCT',
+                                                              'GKD_CHANNEL_CLOSED', 'GKD_ACCOUNT_AUTHORITY', 'GKD_HHS_CHECKS_FAILED',
+                                                              'GKD_CUSTOMER_ABORTED', 'GKD_FRAUD_SUSPICION', 'CONSENT_UPDATE', 'GKD_OTHER'))
 );
 CREATE INDEX ix_consent_customer ON consent (customer_id);
 

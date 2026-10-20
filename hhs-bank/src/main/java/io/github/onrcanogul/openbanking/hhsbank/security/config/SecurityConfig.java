@@ -52,7 +52,8 @@ class SecurityConfig {
 
     @Bean
     @Order(3)
-    SecurityFilterChain ohvpsChain(HttpSecurity http, JwtDecoder decoder) throws Exception {
+    SecurityFilterChain ohvpsChain(HttpSecurity http,
+                                   @Qualifier("customerTokenDecoder") JwtDecoder decoder) throws Exception {
         return http
                 .securityMatcher("/ohvps/**")
                 .authorizeHttpRequests(a -> a

@@ -4,6 +4,8 @@ import io.github.onrcanogul.openbanking.hhsbank.common.enumeration.Currency;
 import io.github.onrcanogul.openbanking.hhsbank.domain.account.model.Balance;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -25,6 +27,7 @@ public class BalanceEntity {
     @Column(name = "amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false, length = 3)
     private Currency currency;
 

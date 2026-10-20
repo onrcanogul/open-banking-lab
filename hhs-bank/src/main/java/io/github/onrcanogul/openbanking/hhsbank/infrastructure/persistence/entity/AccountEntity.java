@@ -4,6 +4,8 @@ import io.github.onrcanogul.openbanking.hhsbank.common.enumeration.Currency;
 import io.github.onrcanogul.openbanking.hhsbank.domain.account.model.Account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -25,6 +27,7 @@ public class AccountEntity {
     @Column(name = "iban", nullable = false, length = 34)
     private String iban;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false, length = 3)
     private Currency currency;
 

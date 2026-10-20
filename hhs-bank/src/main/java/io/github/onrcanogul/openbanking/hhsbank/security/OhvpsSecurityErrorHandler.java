@@ -1,6 +1,5 @@
 package io.github.onrcanogul.openbanking.hhsbank.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -21,7 +21,7 @@ import java.time.OffsetDateTime;
 @RequiredArgsConstructor
 public class OhvpsSecurityErrorHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
 
-    private final ObjectMapper mapper;
+    private final JsonMapper mapper;
     private final Clock clock;
 
     @Override

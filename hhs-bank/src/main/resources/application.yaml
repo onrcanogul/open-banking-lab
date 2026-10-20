@@ -15,14 +15,6 @@ spring:
   flyway:
     locations: classpath:db/migration
 
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-  flyway:
-    locations: classpath:db/migration,classpath:db/dev-data
-
 server:
   port: 8081
 management:
@@ -39,3 +31,11 @@ ohvps:
     clock-skew: 30s
 
   bank:
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    locations: classpath:db/migration,classpath:db/dev-data

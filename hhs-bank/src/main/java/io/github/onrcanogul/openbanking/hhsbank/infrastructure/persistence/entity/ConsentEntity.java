@@ -42,7 +42,7 @@ public class ConsentEntity {
     private OffsetDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "cancellation_status", nullable = false, length = 30)
+    @Column(name = "cancellation_status", length = 30)
     private CancellationReason cancellationReason;
 
     @Version
@@ -71,12 +71,15 @@ public class ConsentEntity {
         e.consentId = c.consentId();
         e.customerId = c.customerId();
         e.tppCode = c.tppCode();
+        e.createdAt = c.createdAt();
         return e.apply(c);
     }
 
     public ConsentEntity apply(Consent c) {
         this.status = c.status();
+        this.cancellationReason = c.cancellationReason();
         this.expiresAt = c.expiresAt();
+        this.updatedAt = c.updatedAt();
         this.permissions.clear();
         this.permissions.addAll(c.permissions());
         this.accountRefs.clear();
