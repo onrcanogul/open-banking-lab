@@ -23,7 +23,7 @@ public class OutboxWriter {
                 INSERT INTO outbox_event (id, aggregate_type, aggregate_id, event_type, topic, payload, request_id)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                    event.getEventId(), aggregateType, aggregateId,
+                    event.eventId(), aggregateType, aggregateId,
                     event.getClass().getSimpleName(), topic,
                     json.writeValueAsString(event), MDC.get("requestId"));
         } catch (JsonProcessingException e) {

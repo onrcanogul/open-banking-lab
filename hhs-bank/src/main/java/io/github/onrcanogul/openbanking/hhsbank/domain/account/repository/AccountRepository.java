@@ -1,4 +1,4 @@
-﻿package io.github.onrcanogul.openbanking.hhsbank.domain.account.repository;
+package io.github.onrcanogul.openbanking.hhsbank.domain.account.repository;
 
 import io.github.onrcanogul.openbanking.hhsbank.common.pagination.PageQuery;
 import io.github.onrcanogul.openbanking.hhsbank.common.pagination.PageResult;

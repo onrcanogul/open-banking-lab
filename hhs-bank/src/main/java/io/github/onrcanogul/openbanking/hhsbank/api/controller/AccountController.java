@@ -26,12 +26,12 @@ public class AccountController {
     }
 
     @GetMapping("/{hspRef}/bakiye")
-    BalanceResponse balance(@AuthenticationPrincipal ConsentContext consentContext, @PathVariable("hspRef") String accountRef) {
+    public BalanceResponse balance(@AuthenticationPrincipal ConsentContext consentContext, @PathVariable("hspRef") String accountRef) {
         return BalanceResponse.from(service.getBalance(consentContext ,accountRef));
     }
 
     @GetMapping
-    ResponseEntity<List<AccountResponse>> list(
+    public ResponseEntity<List<AccountResponse>> list(
             @AuthenticationPrincipal ConsentContext consentContext,
             @RequestParam(name = "syfNo", defaultValue = "1") int pageNumber,
             @RequestParam(name = "syfKytSayi", defaultValue = "25") int pageSize,

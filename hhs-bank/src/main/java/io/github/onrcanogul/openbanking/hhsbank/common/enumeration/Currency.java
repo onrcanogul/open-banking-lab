@@ -1,4 +1,4 @@
-﻿package io.github.onrcanogul.openbanking.hhsbank.common.enumeration;
+package io.github.onrcanogul.openbanking.hhsbank.common.enumeration;
 
 public enum Currency {
     TRY,

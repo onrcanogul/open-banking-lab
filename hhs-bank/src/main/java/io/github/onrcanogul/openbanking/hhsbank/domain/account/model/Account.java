@@ -1,4 +1,4 @@
-﻿package io.github.onrcanogul.openbanking.hhsbank.domain.account.model;
+package io.github.onrcanogul.openbanking.hhsbank.domain.account.model;
 
 import io.github.onrcanogul.openbanking.hhsbank.common.enumeration.Currency;
 

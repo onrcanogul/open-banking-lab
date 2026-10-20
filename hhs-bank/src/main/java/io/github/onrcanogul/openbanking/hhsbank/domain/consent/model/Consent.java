@@ -1,4 +1,4 @@
-﻿package io.github.onrcanogul.openbanking.hhsbank.domain.consent.model;
+package io.github.onrcanogul.openbanking.hhsbank.domain.consent.model;
 
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.ConsentRevokedException;
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.InvalidConsentTransitionException;
