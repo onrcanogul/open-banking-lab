@@ -17,7 +17,7 @@ public class OutboxWriter {
     private final JsonMapper json;          // Boot 4 / Jackson 3. Boot 3'teysen ObjectMapper
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void append(String aggregateType, String aggregateId, String topic, BaseEvent event) {
+    public void append(String aggregateType, String aggregateId, String topic, DomainEvent event) {
         try {
             jdbc.update("""
                 INSERT INTO outbox_event (id, aggregate_type, aggregate_id, event_type, topic, payload, request_id)

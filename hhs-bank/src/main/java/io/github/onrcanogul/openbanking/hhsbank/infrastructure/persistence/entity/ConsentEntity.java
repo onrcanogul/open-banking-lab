@@ -1,5 +1,6 @@
 package io.github.onrcanogul.openbanking.hhsbank.infrastructure.persistence.entity;
 
+import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.CancellationReason;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.Consent;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.ConsentPermission;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.ConsentStatus;
@@ -27,12 +28,22 @@ public class ConsentEntity {
     @Column(name = "tpp_code", nullable = false, length = 10)
     private String tppCode;
 
-    @Enumerated(EnumType.STRING)                   // ORDINAL asla: enum sırası değişince veri bozulur
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private ConsentStatus status;
 
     @Column(name = "expires_at", nullable = false)
     private OffsetDateTime expiresAt;
+
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cancellation_status", nullable = false, length = 30)
+    private CancellationReason cancellationReason;
 
     @Version
     @Column(name = "version", nullable = false)
@@ -50,8 +61,8 @@ public class ConsentEntity {
     private Set<String> accountRefs = new HashSet<>();
 
     public Consent toDomain() {
-        return new Consent(consentId, customerId, tppCode, status,
-                Set.copyOf(permissions), Set.copyOf(accountRefs), expiresAt);
+        return new Consent(consentId, customerId, tppCode, status, cancellationReason,
+                Set.copyOf(permissions), Set.copyOf(accountRefs), expiresAt, createdAt, updatedAt);
     }
 
     public static ConsentEntity fromDomain(Consent c) {

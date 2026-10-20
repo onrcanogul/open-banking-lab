@@ -1,6 +1,8 @@
 package io.github.onrcanogul.openbanking.hhsbank.infrastructure.configuration;
 
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.ConsentNotFoundException;
+import io.github.onrcanogul.openbanking.hhsbank.common.exception.InvalidConsentTransitionException;
+import io.github.onrcanogul.openbanking.hhsbank.common.exception.InvalidEventPayloadException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,6 +18,8 @@ public class KafkaConfig {
                 new DeadLetterPublishingRecoverer(template),
                 new ExponentialBackOff(500, 2.0) {{ setMaxElapsedTime(10_000); }});
         handler.addNotRetryableExceptions(
+                InvalidEventPayloadException.class,
+                InvalidConsentTransitionException.class,
                 ConsentNotFoundException.class);
         return handler;
     }
