@@ -81,8 +81,8 @@ public record Consent (
         return with(TERMINATED, null, accountRefs, clock);
     }
 
-    public boolean isActive(Clock clock) {
-        return status == ConsentStatus.AUTHORIZED && OffsetDateTime.now(clock).isBefore(expiresAt);
+    public boolean isUsable(Clock clock) {
+        return status == AUTHORIZATION_USED && OffsetDateTime.now(clock).isBefore(expiresAt);
     }
 
     private void requireStatus(ConsentStatus expected) {

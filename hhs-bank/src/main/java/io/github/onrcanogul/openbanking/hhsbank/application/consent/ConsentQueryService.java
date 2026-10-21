@@ -25,7 +25,7 @@ public class ConsentQueryService {
                 () -> new ConsentNotFoundException(consentId)
         );
 
-        if(!consent.isActive(clock)) {
+        if(!consent.isUsable(clock)) {
             throw new ConsentNotActiveException(consentId, consent.status());
         }
 
@@ -33,14 +33,8 @@ public class ConsentQueryService {
     }
 
     public Consent getForTpp(String consentId, String tppCode) {
-        Consent consent = repository.findByConsentIdAndTppCode(consentId, tppCode).orElseThrow(
+        return repository.findByConsentIdAndTppCode(consentId, tppCode).orElseThrow(
                 () -> new ConsentNotFoundException(consentId)
         );
-
-        if (!consent.isActive(clock)) {
-            throw new ConsentNotActiveException(consentId, consent.status());
-        }
-
-        return consent;
     }
 }
