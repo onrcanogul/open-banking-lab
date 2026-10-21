@@ -15,6 +15,10 @@ spring:
   flyway:
     locations: classpath:db/migration
 
+logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
+
 server:
   port: 8081
 management:

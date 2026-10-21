@@ -1,52 +1,46 @@
 package io.github.onrcanogul.openbanking.hhsbank.security;
 
+import io.github.onrcanogul.openbanking.hhsbank.common.error.OhvpsErrorWriter;
+import io.github.onrcanogul.openbanking.hhsbank.common.exception.OhvpsErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.OffsetDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OhvpsSecurityErrorHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
 
-    private final JsonMapper mapper;
-    private final Clock clock;
+    private final OhvpsErrorWriter writer;
 
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse res,
                          AuthenticationException ex) throws IOException {
-        res.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");       // RFC 6750: 401 yanıtında bulunmalı
-        write(req, res, HttpStatus.UNAUTHORIZED, "TR.OHVPS.Connection.InvalidToken");
+        OhvpsErrorCode code = ex instanceof OhvpsAuthenticationException known
+                ? known.errorCode()
+                : OhvpsErrorCode.INVALID_TOKEN;
+        if (code.status() == HttpStatus.UNAUTHORIZED) {
+            res.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");       // RFC 6750: required on a 401
+        }
+        log.info("Authentication rejected: {} ({})", code.code(), ex.getClass().getSimpleName());
+        writer.write(req, res, code, List.of());
     }
 
     @Override
     public void handle(HttpServletRequest req, HttpServletResponse res,
                        AccessDeniedException ex) throws IOException {
-        write(req, res, HttpStatus.FORBIDDEN, "TR.OHVPS.Resource.Forbidden");
-    }
-
-    private void write(HttpServletRequest req, HttpServletResponse res,
-                       HttpStatus status, String errorCode) throws IOException {
-        res.setStatus(status.value());
-        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        mapper.writeValue(res.getOutputStream(), new OhvpsErrorResponse(
-                req.getRequestURI(),
-                req.getHeader("X-Request-ID"),
-                OffsetDateTime.now(clock),
-                status.value(),
-                status.getReasonPhrase(),
-                errorCode));
+        log.info("Access denied: {}", OhvpsErrorCode.FORBIDDEN.code());
+        writer.write(req, res, OhvpsErrorCode.FORBIDDEN, List.of());
     }
 }

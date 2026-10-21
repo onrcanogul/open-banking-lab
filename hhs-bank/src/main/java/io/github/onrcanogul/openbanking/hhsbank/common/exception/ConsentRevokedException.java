@@ -4,5 +4,6 @@ import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.ConsentStat
 
 public class ConsentRevokedException extends RuntimeException {
     public ConsentRevokedException(String consentId, ConsentStatus status) {
+        super("Consent: " + consentId + " is already in final status " + status.name());
     }
 }

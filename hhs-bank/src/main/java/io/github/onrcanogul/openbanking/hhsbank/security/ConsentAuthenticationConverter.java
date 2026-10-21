@@ -2,7 +2,7 @@ package io.github.onrcanogul.openbanking.hhsbank.security;
 
 import io.github.onrcanogul.openbanking.hhsbank.application.consent.ConsentContext;
 import io.github.onrcanogul.openbanking.hhsbank.application.consent.ConsentQueryService;
-import io.github.onrcanogul.openbanking.hhsbank.common.exception.ConsentNotActiveAuthenticationException;
+import io.github.onrcanogul.openbanking.hhsbank.common.error.DomainErrorCodes;
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.ConsentNotActiveException;
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.ConsentNotFoundException;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.Consent;
@@ -26,7 +26,7 @@ public class ConsentAuthenticationConverter implements Converter<Jwt, AbstractAu
         try {
             consent = consentQueryService.getActive(jwt.getClaimAsString("riza_no"));
         } catch (ConsentNotFoundException | ConsentNotActiveException e) {
-            throw new ConsentNotActiveAuthenticationException(e);
+            throw new OhvpsAuthenticationException(DomainErrorCodes.of(e).orElseThrow(), e);
         }
 
         ConsentContext ctx = new ConsentContext(
