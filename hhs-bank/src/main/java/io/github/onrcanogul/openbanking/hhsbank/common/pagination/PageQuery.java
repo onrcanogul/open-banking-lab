@@ -1,7 +1,6 @@
 package io.github.onrcanogul.openbanking.hhsbank.common.pagination;
 
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.InvalidPagingException;
-import org.hibernate.query.SortDirection;
 
 public record PageQuery(int pageNumber, int pageSize, String sortField, SortDirection direction) {
 

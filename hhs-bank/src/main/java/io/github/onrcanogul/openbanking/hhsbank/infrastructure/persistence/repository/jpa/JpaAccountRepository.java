@@ -3,12 +3,12 @@ package io.github.onrcanogul.openbanking.hhsbank.infrastructure.persistence.repo
 import io.github.onrcanogul.openbanking.hhsbank.common.exception.InvalidSortFieldException;
 import io.github.onrcanogul.openbanking.hhsbank.common.pagination.PageQuery;
 import io.github.onrcanogul.openbanking.hhsbank.common.pagination.PageResult;
+import io.github.onrcanogul.openbanking.hhsbank.common.pagination.SortDirection;
 import io.github.onrcanogul.openbanking.hhsbank.domain.account.model.Account;
 import io.github.onrcanogul.openbanking.hhsbank.domain.account.model.Balance;
 import io.github.onrcanogul.openbanking.hhsbank.domain.account.repository.AccountRepository;
 import io.github.onrcanogul.openbanking.hhsbank.infrastructure.persistence.entity.AccountEntity;
 import io.github.onrcanogul.openbanking.hhsbank.infrastructure.persistence.entity.BalanceEntity;
-import org.hibernate.query.SortDirection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -44,7 +44,7 @@ public class JpaAccountRepository implements AccountRepository {
         }
         String field = Optional.ofNullable(SORT_FIELDS.get(page.sortField()))
                 .orElseThrow(() -> new InvalidSortFieldException(page.sortField()));
-        Sort.Direction dir = page.direction() == SortDirection.DESCENDING ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort.Direction dir = page.direction() == SortDirection.DESC ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         Page<AccountEntity> result = accountRepository.findByAccountRefInAndCustomerId(
                 accountRefs, customerId, PageRequest.of(page.pageNumber() - 1, page.pageSize(), Sort.by(dir, field)));
