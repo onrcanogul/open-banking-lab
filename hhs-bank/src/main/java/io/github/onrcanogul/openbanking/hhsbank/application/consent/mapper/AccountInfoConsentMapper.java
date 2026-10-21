@@ -39,15 +39,16 @@ public class AccountInfoConsentMapper {
 
     public AccountInfoConsentResponse toResponse(Consent c) {
         CustomerIdentity id = c.identity();
+        GkdAuthorization g = c.gkd();
         TransactionWindow w = c.transactionWindow();
         return new AccountInfoConsentResponse(
                 null,
                 new ConsentInfo(c.consentId(), c.createdAt(), c.updatedAt(), c.status().ohvpsCode(),
                         c.cancellationReason() == null ? null : c.cancellationReason().code()),
-                new Identity(id.type(), id.value(), id.corporateType(), id.corporateValue(), id.customerType()),
+                id == null ? null : new Identity(id.type(), id.value(), id.corporateType(), id.corporateValue(), id.customerType()),
                 new ParticipantInfo(bank.aspspCode(), c.tppCode()),
-                new GkdResponse(c.gkd().method(), c.gkd().redirectUrl(), null,
-                        bankRedirectUrl(c), c.gkd().deadline()),
+                g == null ? null : new GkdResponse(g.method(), g.redirectUrl(), null,
+                        bankRedirectUrl(c), g.deadline()),
                 new AccountInfoScope(new PermissionInfo(
                         c.permissions().stream().map(ConsentPermission::code).sorted().toList(),
                         c.expiresAt(),

@@ -60,10 +60,21 @@ public class ConsentEntity {
     @Column(name = "account_ref", length = 40)
     private Set<String> accountRefs = new HashSet<>();
 
+    @OneToOne(mappedBy = "consent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ConsentIdentityEntity identity;
+
+    @OneToOne(mappedBy = "consent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ConsentGkdEntity gkd;
+
+    @OneToOne(mappedBy = "consent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ConsentTransactionWindowEntity transactionWindow;
+
     public Consent toDomain() {
         return new Consent(consentId, customerId, tppCode, status, cancellationReason,
-                Set.copyOf(permissions), Set.copyOf(accountRefs), expiresAt, createdAt, updatedAt, null, null, null);
-        //TODO
+                Set.copyOf(permissions), Set.copyOf(accountRefs), expiresAt, createdAt, updatedAt,
+                identity == null ? null : identity.toDomain(),
+                transactionWindow == null ? null : transactionWindow.toDomain(),
+                gkd == null ? null : gkd.toDomain());
     }
 
     public static ConsentEntity fromDomain(Consent c) {
@@ -84,6 +95,30 @@ public class ConsentEntity {
         this.permissions.addAll(c.permissions());
         this.accountRefs.clear();
         this.accountRefs.addAll(c.accountRefs());
+
+        if (c.identity() == null) {
+            this.identity = null;
+        } else if (this.identity == null) {
+            this.identity = ConsentIdentityEntity.of(this, c.identity());
+        } else {
+            this.identity.update(c.identity());
+        }
+
+        if (c.gkd() == null) {
+            this.gkd = null;
+        } else if (this.gkd == null) {
+            this.gkd = ConsentGkdEntity.of(this, c.gkd());
+        } else {
+            this.gkd.update(c.gkd());
+        }
+
+        if (c.transactionWindow() == null) {
+            this.transactionWindow = null;
+        } else if (this.transactionWindow == null) {
+            this.transactionWindow = ConsentTransactionWindowEntity.of(this, c.transactionWindow());
+        } else {
+            this.transactionWindow.update(c.transactionWindow());
+        }
         return this;
     }
 }
