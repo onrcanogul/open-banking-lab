@@ -1,5 +1,6 @@
 package io.github.onrcanogul.openbanking.hhsbank.application.consent.model;
 
+import io.github.onrcanogul.openbanking.hhsbank.common.TppCodes;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.ConsentPermission;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.CustomerIdentity;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.TransactionWindow;
@@ -20,4 +21,11 @@ public record CreateConsentCommand(
         TransactionWindow transactionWindow,
         String gkdMethod,
         String redirectUrl,
-        boolean decoupledRequested) {}
+        boolean decoupledRequested) {
+
+    public CreateConsentCommand {
+        authenticatedTppCode = TppCodes.normalize(authenticatedTppCode);
+        tppCodeHeader = TppCodes.normalize(tppCodeHeader);
+        tppCodeBody = TppCodes.normalize(tppCodeBody);
+    }
+}
