@@ -8,6 +8,7 @@ import io.github.onrcanogul.openbanking.hhsbank.common.messaging.OutboxWriter;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.CancellationReason;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.Consent;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.repository.ConsentRepository;
+import io.github.onrcanogul.openbanking.hhsbank.infrastructure.properties.MessagingProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,6 +26,7 @@ public class ConsentAuthEventHandler {
     private final ConsentRepository repository;
     private final OutboxWriter outboxWriter;
     private final ApplicationEventPublisher localEventPublisher;
+    private final MessagingProperties messaging;
     private final Clock clock;
 
     @Transactional
@@ -47,7 +49,8 @@ public class ConsentAuthEventHandler {
             throw e;
         }
         repository.save(after);
-        outboxWriter.append("Consent", after.consentId(), "consent-status-changed", ConsentStatusChanged.of(before, after, clock));
+        outboxWriter.append("Consent", after.consentId(), messaging.topics().consentStatusChanged(),
+                ConsentStatusChanged.of(before, after, clock));
         localEventPublisher.publishEvent(new ConsentCacheInvalidation(after.consentId()));
     }
 

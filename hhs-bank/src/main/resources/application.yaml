@@ -30,6 +30,11 @@ ohvps:
     audience: ohvps-hbh
     clock-skew: 30s
 
+  messaging:
+    topics:
+      gkd-events: ohvps.gkd.events
+      consent-status-changed: ohvps.consent.status-changed
+
   bank:
 
 ---

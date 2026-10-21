@@ -22,7 +22,7 @@ public class GkdEventListener {
     private final JsonMapper jsonMapper;
     private final ConsentAuthEventHandler handler;
 
-    @KafkaListener(topics = "gdk_events", groupId = CONSUMER)
+    @KafkaListener(topics = "${ohvps.messaging.topics.gkd-events}", groupId = CONSUMER)
     void onMessage(ConsumerRecord<String, String> record) {
         String requestId = header(record, "X-Request-ID");
         try {

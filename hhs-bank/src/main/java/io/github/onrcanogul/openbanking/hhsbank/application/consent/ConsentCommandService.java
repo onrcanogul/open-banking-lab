@@ -10,6 +10,7 @@ import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.Cancellatio
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.Consent;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.ConsentStatus;
 import io.github.onrcanogul.openbanking.hhsbank.domain.consent.repository.ConsentRepository;
+import io.github.onrcanogul.openbanking.hhsbank.infrastructure.properties.MessagingProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
-
-import static io.github.onrcanogul.openbanking.hhsbank.domain.consent.model.ConsentStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +29,7 @@ public class ConsentCommandService {
     private final ConsentRequestRules ruleService;
     private final OutboxWriter outboxWriter;
     private final ApplicationEventPublisher localEventPublisher;
+    private final MessagingProperties messaging;
     private final Clock clock;
 
     @Transactional
@@ -86,7 +86,7 @@ public class ConsentCommandService {
     }
 
     private void recordChange(Consent before, Consent after) {
-        outboxWriter.append("Consent", after.consentId(), "consent-status-changed",
+        outboxWriter.append("Consent", after.consentId(), messaging.topics().consentStatusChanged(),
                 ConsentStatusChanged.of(before, after, clock));
         localEventPublisher.publishEvent(new ConsentCacheInvalidation(after.consentId()));
     }
