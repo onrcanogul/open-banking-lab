@@ -14,6 +14,9 @@ spring:
       ddl-auto: validate
   flyway:
     locations: classpath:db/migration
+  kafka:
+    consumer:
+      auto-offset-reset: earliest      # a fresh consumer group must not skip GKD events produced before its first start
 
 logging:
   pattern:
@@ -40,6 +43,11 @@ ohvps:
       consent-status-changed: ohvps.consent.status-changed
 
   bank:
+    aspsp-code: ${OHVPS_ASPSP_CODE:HHS1}                 # hhsKod, AN4; this lab's own bank code
+
+  gkd:
+    # Where the customer is sent for strong authentication (hhsYonAdr); the auth-simulator module will serve it
+    redirect-base-url: ${OHVPS_GKD_REDIRECT_BASE_URL:http://localhost:8082/gkd}
 
 ---
 spring:
