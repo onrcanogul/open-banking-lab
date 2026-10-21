@@ -21,7 +21,7 @@ public record ConsentStatusChanged(
                 UUID.randomUUID().toString(),
                 after.consentId(),
                 after.tppCode(),
-                before.status().ohvpsCode(),
+                before == null ? null : before.status().ohvpsCode(),
                 after.status().ohvpsCode(),
                 after.cancellationReason() == null ? null : after.cancellationReason().code(),
                 OffsetDateTime.now(clock));
