@@ -18,22 +18,24 @@ class JwtDecoderConfig {
     @Bean
     @Qualifier("customerTokenDecoder")
     JwtDecoder customerTokenDecoder(OhvpsSecurityProperties props) {
-        return build(props, new JwtClaimValidator<String>("riza_no", Objects::nonNull));
+        return build(props, props.customerIssuer(), new JwtClaimValidator<String>("riza_no", Objects::nonNull));
     }
 
+    /** TPP and internal service tokens (client_credentials); azp identifies the calling client. */
     @Bean
-    @Qualifier("tppTokenDecoder")
-    JwtDecoder tppTokenDecoder(OhvpsSecurityProperties props) {
-        return build(props, new JwtClaimValidator<String>("azp", azp -> azp != null && !azp.isBlank()));
+    @Qualifier("clientTokenDecoder")
+    JwtDecoder clientTokenDecoder(OhvpsSecurityProperties props) {
+        return build(props, props.clientIssuer(), new JwtClaimValidator<String>("azp", azp -> azp != null && !azp.isBlank()));
     }
 
-    private JwtDecoder build(OhvpsSecurityProperties props, OAuth2TokenValidator<Jwt> specific) {
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(props.jwkSetUri())
+    private JwtDecoder build(OhvpsSecurityProperties props, OhvpsSecurityProperties.Issuer issuer,
+                             OAuth2TokenValidator<Jwt> specific) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(issuer.jwkSetUri())
                 .jwsAlgorithm(SignatureAlgorithm.RS256)
                 .build();
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
                 new JwtTimestampValidator(props.clockSkew()),
-                new JwtIssuerValidator(props.issuer()),
+                new JwtIssuerValidator(issuer.issuer()),
                 new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
                         aud -> aud != null && aud.contains(props.audience())),
                 specific));

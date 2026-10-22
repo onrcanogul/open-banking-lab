@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{gkd/layout :: head('Rıza onayı')}"></head>
+<body>
+<header th:replace="~{gkd/layout :: header}"></header>
+<main>
+    <div class="card">
+        <h1>Hesap bilgisi paylaşım onayı</h1>
+        <p class="lead">
+            Sayın <strong th:text="${customerName}">Müşteri</strong>,
+            <strong th:text="${consent.tppCode}">YÖS</strong> kodlu ödeme hizmeti sağlayıcısı
+            aşağıdaki bilgilerinize erişmek için onayınızı istiyor.
+        </p>
+
+        <dl>
+            <dt>Rıza no</dt>
+            <dd th:text="${consent.consentId}">-</dd>
+            <dt>Erişim bitişi</dt>
+            <dd th:text="${#temporals.format(consent.expiresAt, 'dd.MM.yyyy HH:mm')}">-</dd>
+            <dt>Onay için son</dt>
+            <dd th:text="${#temporals.format(consent.authorizationDeadline, 'HH:mm:ss')}">-</dd>
+        </dl>
+
+        <h2>İstenen izinler</h2>
+        <ul class="perms">
+            <li th:each="p : ${permissions}" th:text="${p}">01 · Temel hesap bilgisi</li>
+        </ul>
+
+        <form method="post" th:action="@{/gkd/approve}">
+            <input type="hidden" name="rizaNo" th:value="${consent.consentId}">
+
+            <h2>Paylaşılacak hesaplar</h2>
+            <div class="error" th:if="${error}" th:text="${error}">Hata</div>
+            <label class="account" th:each="a : ${consent.accounts}">
+                <input type="checkbox" name="hesaplar" th:value="${a.accountRef}">
+                <span>
+                    <span th:text="${a.iban}">TR00</span>
+                    <small th:text="${a.accountRef + ' · ' + a.currency}">ACC · TRY</small>
+                </span>
+            </label>
+
+            <div class="actions">
+                <button type="submit" class="secondary" th:formaction="@{/gkd/reject}">Reddet</button>
+                <button type="submit" class="primary">Onayla</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

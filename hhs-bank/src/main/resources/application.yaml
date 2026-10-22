@@ -32,10 +32,14 @@ management:
 
 ohvps:
   security:
-    issuer: http://localhost:8080/realms/ohvps-bank
-    jwk-set-uri: http://localhost:8080/realms/ohvps-bank/protocol/openid-connect/certs
     audience: ohvps-hbh
     clock-skew: 30s
+    client-issuer:      # Keycloak: TPP (client_credentials) and internal service tokens
+      issuer: ${OHVPS_KEYCLOAK_ISSUER:http://localhost:8080/realms/ohvps-bank}
+      jwk-set-uri: ${OHVPS_KEYCLOAK_JWKS:http://localhost:8080/realms/ohvps-bank/protocol/openid-connect/certs}
+    customer-issuer:    # auth-simulator: erişim belirteci issued after GKD, carries riza_no
+      issuer: ${OHVPS_GKD_ISSUER:http://localhost:8082}
+      jwk-set-uri: ${OHVPS_GKD_JWKS:http://localhost:8082/.well-known/jwks.json}
 
   messaging:
     topics:

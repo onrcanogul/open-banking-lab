@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{gkd/layout :: head(${title})}"></head>
+<body>
+<header th:replace="~{gkd/layout :: header}"></header>
+<main>
+    <div class="card">
+        <h1 th:text="${title}">Başlık</h1>
+        <p class="lead" th:text="${detail}">Açıklama</p>
+    </div>
+</main>
+</body>
+</html>

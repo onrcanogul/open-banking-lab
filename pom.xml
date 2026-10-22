@@ -17,6 +17,7 @@
 
 	<modules>
 		<module>hhs-bank</module>
+		<module>auth-simulator</module>
 	</modules>
 
 	<name/>

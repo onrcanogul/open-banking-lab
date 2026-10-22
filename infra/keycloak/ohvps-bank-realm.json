@@ -1,0 +1,171 @@
+{
+  "realm": "ohvps-bank",
+  "enabled": true,
+  "sslRequired": "none",
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "loginWithEmailAllowed": false,
+  "duplicateEmailsAllowed": false,
+  "clientScopes": [
+    {
+      "name": "hesap_bilgisi",
+      "description": "ÖHVPS hesap bilgisi hizmeti (HBH)",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "aud-ohvps-hbh",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "ohvps-hbh",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "gkd_internal",
+      "description": "GKD kanalının hhs-bank iç API'sine erişimi",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "aud-ohvps-hbh",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "ohvps-hbh",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "TPP1",
+      "name": "Demo YÖS",
+      "description": "Lab YÖS'ü; client_credentials ile TPP token alır (azp = yosKod)",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "tpp1-dev-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect",
+      "defaultClientScopes": [
+        "hesap_bilgisi"
+      ],
+      "optionalClientScopes": []
+    },
+    {
+      "clientId": "hhs-gkd",
+      "name": "HHS GKD kanalı",
+      "description": "auth-simulator GKD ekranı; müşteriyi authorization code + PKCE ile doğrular (OIDC login). Erişim belirtecini auth-simulator kendisi imzalar.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "hhs-gkd-dev-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8082/login/oauth2/code/keycloak"
+      ],
+      "webOrigins": [],
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      },
+      "defaultClientScopes": [],
+      "optionalClientScopes": [],
+      "protocolMappers": [
+        {
+          "name": "sub",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-sub-mapper",
+          "config": {
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "preferred_username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "username",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "auth-simulator",
+      "name": "auth-simulator servis hesabı",
+      "description": "hhs-bank iç GKD API'sini çağırmak için client_credentials",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "auth-simulator-dev-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect",
+      "defaultClientScopes": [
+        "gkd_internal"
+      ],
+      "optionalClientScopes": []
+    }
+  ],
+  "users": [
+    {
+      "username": "11111111110",
+      "enabled": true,
+      "email": "musteri1@hhs.test",
+      "emailVerified": true,
+      "firstName": "Ayşe",
+      "lastName": "Demo",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "musteri1",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "22222222220",
+      "enabled": true,
+      "email": "musteri2@hhs.test",
+      "emailVerified": true,
+      "firstName": "Mehmet",
+      "lastName": "Demo",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "musteri2",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

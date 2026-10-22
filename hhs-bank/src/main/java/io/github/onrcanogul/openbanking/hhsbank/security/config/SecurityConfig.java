@@ -34,7 +34,7 @@ class SecurityConfig {
     @Bean
     @Order(2)
     SecurityFilterChain consentChain(HttpSecurity http,
-                                     @Qualifier("tppTokenDecoder") JwtDecoder decoder,
+                                     @Qualifier("clientTokenDecoder") JwtDecoder decoder,
                                      TppAuthenticationConverter tppConverter) throws Exception {
         return http
                 .securityMatcher("/ohvps/hbh/s2.0/hesap-bilgisi-rizasi/**")
@@ -50,8 +50,25 @@ class SecurityConfig {
                 .build();
     }
 
+    /** Bank-internal API for the GKD channel (auth-simulator); service token from Keycloak, never a TPP token. */
     @Bean
     @Order(3)
+    SecurityFilterChain internalGkdChain(HttpSecurity http,
+                                         @Qualifier("clientTokenDecoder") JwtDecoder decoder) throws Exception {
+        return http
+                .securityMatcher("/internal/gkd/**")
+                .authorizeHttpRequests(a -> a.anyRequest().hasAuthority("SCOPE_gkd_internal"))
+                .oauth2ResourceServer(rs -> rs
+                        .jwt(j -> j.decoder(decoder))
+                        .authenticationEntryPoint(errorHandler))
+                .exceptionHandling(e -> e.accessDeniedHandler(errorHandler))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                .build();
+    }
+
+    @Bean
+    @Order(4)
     SecurityFilterChain ohvpsChain(HttpSecurity http,
                                    @Qualifier("customerTokenDecoder") JwtDecoder decoder) throws Exception {
         return http
@@ -72,7 +89,7 @@ class SecurityConfig {
     }
 
     @Bean
-    @Order(4)
+    @Order(5)
     SecurityFilterChain denyEverythingElse(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(a -> a

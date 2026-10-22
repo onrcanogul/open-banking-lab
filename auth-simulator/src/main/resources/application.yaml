@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: auth-simulator
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:                         # customer login = GKD
+            client-id: hhs-gkd
+            client-secret: ${HHS_GKD_CLIENT_SECRET:hhs-gkd-dev-secret}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid
+          hhs-bank:                         # this service calling hhs-bank's internal GKD API
+            provider: keycloak
+            client-id: auth-simulator
+            client-secret: ${AUTH_SIMULATOR_CLIENT_SECRET:auth-simulator-dev-secret}
+            authorization-grant-type: client_credentials
+        provider:
+          keycloak:
+            # Explicit endpoints instead of issuer-uri, so the app starts even when Keycloak is not up yet
+            authorization-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/ohvps-bank/protocol/openid-connect/auth
+            token-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/ohvps-bank/protocol/openid-connect/token
+            jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/ohvps-bank/protocol/openid-connect/certs
+            user-info-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/ohvps-bank/protocol/openid-connect/userinfo
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:                                # TPP tokens on the erişim belirteci endpoint
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/ohvps-bank
+          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/ohvps-bank/protocol/openid-connect/certs
+          audiences: ohvps-hbh
+
+server:
+  port: 8082
+  servlet:
+    session:
+      cookie:
+        name: GKDSESSION                    # localhost cookies are shared across ports; keep it distinct
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health, info"
+
+logging:
+  pattern:
+    correlation: "[%X{requestId:-}] "
+
+simulator:
+  aspsp-code: ${OHVPS_ASPSP_CODE:HHS1}
+  issuer: ${SIMULATOR_ISSUER:http://localhost:8082}
+  audience: ohvps-hbh
+  access-token-ttl: 1h
+  authorization-code-ttl: 5m
+  hhs-bank-base-url: ${HHS_BANK_URL:http://localhost:8081}
+  gkd-events-topic: ohvps.gkd.events

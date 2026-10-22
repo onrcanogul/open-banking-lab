@@ -58,4 +58,10 @@ public class JpaAccountRepository implements AccountRepository {
     public Optional<Balance> findBalance(String accountRef) {
         return balanceRepository.findById(accountRef).map(BalanceEntity::toDomain);
     }
+
+    @Override
+    public List<Account> findByCustomer(String customerId) {
+        return accountRepository.findByCustomerIdOrderByAccountRef(customerId).stream()
+                .map(AccountEntity::toDomain).toList();
+    }
 }
